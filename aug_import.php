@@ -1704,19 +1704,13 @@ $url = 'https://off-mar.ru/sku/';
 
 
 // Удаляем символы, запрещенные в XML ( 9 пункт - https://yandex.ru/support/webmaster/goods-prices/technical-requirements.html)
-function cut($a) {
-    
-    $a = str_replace('"', ' ', $a);
-    $a = str_replace('&', ' ', $a);
-    $a = str_replace('>', ' ', $a);
-    $a = str_replace('<', ' ', $a);
-    $a = str_replace("'", ' ', $a);
-    
-    return $a;
-    
+
+function cut($input) {
+    $characters = array('"', '&', '>', '<', "'");
+    $pattern = "/[" . implode("", $characters) . "]/";
+    $input = preg_replace($pattern, ' ', $input);
+    return $input;
 }
-
-
 
 // Куда импортируем
 $file = 'price.yml';
@@ -1937,8 +1931,26 @@ echo 'Время выполнения: ' . round($time,1) . ' секунд';
 
 ///////////////////////////////////////
 
+// Записываем дату создания прайс-листа, если он существует dirname(__FILE__) . 
 
+$input_price = dirname(__FILE__) . '/webdata/price_list_ot.xls';
+$output_price = '../offt-price.xls';
 
+if (file_exists($excel_price)) {
+    if(copy($excel_price, $output_price)) {
+        $date = date("d.m.Y H:i", filectime(dirname(__FILE__) . '/webdata/price_list_ot.xls'));
+        echo $date . PHP_EOL;
+        update_option( 'price_update', $date );
+        echo 'Копирование прошло успешно!';
+        telegram_send('Прайс-лист успешно скопирован');
+    } else {
+        echo 'Не удалось копировать';
+        telegram_send('Ошибка копирования прайса!');
+    }
+} else {
+    echo 'Ошибка';
+    telegram_send('Прайс не найден!');
+}
 
 // Отменяем блокировку
 set_transient( 'interrupt', false, 3 * MINUTE_IN_SECONDS );
