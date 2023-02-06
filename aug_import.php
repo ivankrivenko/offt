@@ -43,7 +43,6 @@ function break_process () {
     if (file_exists('break')) {
         echo 'Найден файл break... Остановка скрипта';
         telegram_send('Найден файл break. Останавливаем скрипт');
-        // fopen('https://api.telegram.org/bot1451450500:AAFhhZ_xE13Le8mXFdZm4E7Pzznt96RCptw/sendMessage?chat_id=137669248&parse_mode=html&text=Найден%20файл%20break.%20Останавливаем%20скрипт' ,"r");
         set_transient( 'interrupt', false, 3 * MINUTE_IN_SECONDS );
         exit;
     }
@@ -79,7 +78,6 @@ function unzip_webdata ($file){
         }
     } else {
         echo 'Не найден файл ' . $file ;
-        // fopen('https://api.telegram.org/bot1451450500:AAFhhZ_xE13Le8mXFdZm4E7Pzznt96RCptw/sendMessage?chat_id=137669248&parse_mode=html&text=Нет%20архива. ' ,"r");
         exit;
     }
 }
@@ -96,7 +94,6 @@ $interrupt = get_transient('interrupt');
 if ($interrupt == 1) {
     // Скрипт запущен выходим
     echo 'interrupt - Скрипт уже запущен';
-    // fopen('https://api.telegram.org/bot1451450500:AAFhhZ_xE13Le8mXFdZm4E7Pzznt96RCptw/sendMessage?chat_id=137669248&parse_mode=html&text=Скрипт%20уже%20запущен. ' ,"r");
     exit;
 } else {
     // 
@@ -180,10 +177,8 @@ function put_ftp_price ($file, $path) {
             if (ftp_put($ftp_connect, $remote_file, $file, FTP_BINARY)) {
                 echo "$file успешно загружен на сервер\n";
                 telegram_send('Файл отправлен');
-                // fopen('https://api.telegram.org/bot1451450500:AAFhhZ_xE13Le8mXFdZm4E7Pzznt96RCptw/sendMessage?chat_id=137669248&parse_mode=html&text=Файл%20отправлен. ' ,"r");
             } else {
                 echo "Не удалось загрузить $file на сервер\n";
-                // fopen('https://api.telegram.org/bot1451450500:AAFhhZ_xE13Le8mXFdZm4E7Pzznt96RCptw/sendMessage?chat_id=137669248&parse_mode=html&text=Ошибка%20отправки. ' ,"r");
                 telegram_send('Ошибка отправки');
             }
 
@@ -1959,22 +1954,7 @@ remove_directory('webdata');
 
 put_ftp_price($zipfile, '/import/');
 
-// Записываем дату создания прайс-листа, если он существует
-if (file_exists(dirname(__FILE__) . '/webdata/price_list_ot.xls')) {
-    if(copy(dirname(__FILE__) . '/webdata/price_list_ot.xls', '../offt-price.xls')) {
-        $date = date("d.m.Y H:i", filectime(dirname(__FILE__) . '/webdata/price_list_ot.xls'));
-        echo $date . PHP_EOL;
-        update_option( 'price_update', $date );
-        echo 'Копирование прошло успешно!';
-        fopen('https://api.telegram.org/bot1451450500:AAFhhZ_xE13Le8mXFdZm4E7Pzznt96RCptw/sendMessage?chat_id=137669248&parse_mode=html&text=Прайс-лист успешно скопирован' ,"r");
-    } else {
-        echo 'Не удалось копировать';
-        fopen('https://api.telegram.org/bot1451450500:AAFhhZ_xE13Le8mXFdZm4E7Pzznt96RCptw/sendMessage?chat_id=137669248&parse_mode=html&text=Ошибка копирования прайса!' ,"r");
-    }
-} else {
-    echo 'Ошибка';
-    fopen('https://api.telegram.org/bot1451450500:AAFhhZ_xE13Le8mXFdZm4E7Pzznt96RCptw/sendMessage?chat_id=137669248&parse_mode=html&text=Ошибка копирования прайса!' ,"r");
-}
+
 
 unlink('process.log');
 
@@ -1984,10 +1964,8 @@ unlink($zipfile);
 if (isset($not_found)) {
     // $not_found = implode(', ', $not_found);
     $not_found = 'Не удалось обновить цены для следующих товаров: ' . $not_found . PHP_EOL;
-    // fopen('https://api.telegram.org/bot1451450500:AAFhhZ_xE13Le8mXFdZm4E7Pzznt96RCptw/sendMessage?chat_id=137669248&parse_mode=html&text=Остатки%20обновлены. ' . $not_found ,"r");
     telegram_send('Остатки обновлены' . $not_found );
 } else {
-    // fopen('https://api.telegram.org/bot1451450500:AAFhhZ_xE13Le8mXFdZm4E7Pzznt96RCptw/sendMessage?chat_id=137669248&parse_mode=html&text=Остатки%20обновлены. ' ,"r");
     telegram_send('Остатки обновлены');
 }
 
